@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Search;
 
 use App\Ugo\Terms\Term;
@@ -14,14 +15,24 @@ class Search
     protected mixed $time_start;
     protected mixed $time_end;
 
-    function __construct() {
+    function __construct()
+    {
 
-
+        /**
+         * Initialise Analitycs
+         */
+        $this->time_start = microtime(true);
+    
     }
+
     /**
      * Search Api's by single terms
+     * @param Request
+     * @param string
+     * @param string
      */
-    public function byTerms(Request $request, string $term, string $page){
+    public function byTerms(Request $request, string $term, string $page)
+    {
         // Create the search query options
         $queryOptions = [
             "name" => "byTerms",
@@ -30,17 +41,16 @@ class Search
             "filters" => $request->all(),
         ];
 
-
         // Create and run the query
         $searchQuery = (new SearchQuery($queryOptions))->run();
-        
+
         // Get the response onject and set the header;
         $response = $searchQuery->response()->header('X-Ugo-Cache', 'miss');
+
         // Cache the response
         $this->setCache($request, $searchQuery);
-        
-        return $response;
 
+        return $response;
     }
 
     /**
@@ -48,12 +58,8 @@ class Search
      * @param $provider
      * @param $id 
      */
-    public function byId(Request $request, $provider, $id){
-
-        /**
-         * Initialise Analitycs
-         */
-        $this->time_start = microtime(true);
+    public function byId(Request $request, $provider, $id)
+    {
 
         /**
          * Single Search query options
@@ -68,70 +74,70 @@ class Search
          * Create the query and run it
          */
         $searchQuery = (new SearchQuerySingle($queryOptions))->run();
-        
+
         /**
          * Format the response
          */
         $response = $searchQuery->response()->header('X-Ugo-Cache', 'miss');
-        
+
         /**
          * Set query in cache
          */
         $this->setCache($request, $searchQuery);
-    
+
         /**
          * Log query analitycs
          */
-       
         $execution_time = (microtime(true) - $this->time_start);
         $this->SetAnalytics($execution_time, __FUNCTION__);
 
         return $response;
     }
 
-    private function setCache(Request $request, SearchQuery|SearchQuerySingle $searchQuery){
+    /**
+     * Set the result of the query to the cache layer
+     * @param Request
+     * @param SearchQuery|SearchQuerySingle
+     */
+    private function setCache(Request $request, SearchQuery|SearchQuerySingle $searchQuery)
+    {
 
         // REFACTOR IF CACHE IS ENABLE
-        Cache::put($request->fullUrl(), $searchQuery); 
+        Cache::put($request->fullUrl(), $searchQuery);
     }
 
 
-    public function test(Request $request, string $term, string $page){
-        /*
-        $time_start = microtime(true);
-        $time_end = microtime(true);
-        $execution_time = ($time_end - $time_start);*/
+    /**
+     * Test query without async process
+     * @param Request
+     * @param string
+     * @param string
+     */
+    public function test(Request $request, string $term, string $page)
+    {
 
-        // Create the search query options
         $queryOptions = [
             "name" => "byTerms",
             "term" => (new Term('baseball')),
             "page" => $page,
             "filters" => $request->all(),
         ];
-       
-        // Create and run the query
+
         $searchQuery = (new SearchQuery($queryOptions))->run();
-        
-        // Get the response onject and set the header;
+
         $response = $searchQuery->response()->header('X-Ugo-Cache', 'miss');
-        // Cache the response
-        // $this->setCache($request, $searchQuery);
-        
-
-        // $this->SetAnalytics($execution_time);
         return $response;
-
     }
 
-    
     /**
      * Set analitycs data after request is done
+     * @param float
+     * @param string
      */
-    private function SetAnalytics($execution_time, $name){
+    private function SetAnalytics(float $execution_time, string $name)
+    {
         $channelName = "analytics";
         // Store request Analytics data (Request time)
         log::channel($channelName)->info("Search: {$name} take: {$execution_time} sec");
     }
-
 }

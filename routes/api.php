@@ -19,15 +19,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-
 Route::middleware('ugo.cache')->name('search.')->group(function () {
     Route::get('/search/terms/{terms}/{page}', [SearchController::class, 'SearchByTerms'])->name('terms');
     Route::get('/search/file/{provider}/{id}/', [SearchController::class, 'SearchByProviderAndId'])->name('id');
 });
-
-
-
 
 
 Route::get('/health', function (Request $request) {

@@ -1,13 +1,27 @@
 <?php
+
 namespace App\Search;
+
 use Spatie\Async\Pool;
 use App\Ugo\Tasks\AsyncTask;
 
 class SearchQuery
 {
-    function __construct($queryOptions) {
+
+    public string $name;
+    public $term;
+    public $page;
+    public $filters;
+    public array $body;
+    public array $warnings;
+    public array $errors;
+    public array $fatals;
+    public array $times;
+
+    function __construct($queryOptions)
+    {
         // Contruct the Search Class
-       
+
         $this->name = $queryOptions['name'];
         $this->term = $queryOptions['term'];
         $this->page = $queryOptions['page'];
@@ -17,14 +31,14 @@ class SearchQuery
         $this->errors = [];
         $this->fatals = [];
         $this->times = [];
-
     }
 
     /**
      * Run the query
      */
-    public function run(){
-    
+    public function run()
+    {
+
         // Make request to the external api baby
         $providers = config('ugo.api.provider');
         $defaultOutputLength = 102400;
@@ -32,33 +46,31 @@ class SearchQuery
         /**
          * Validate that there is at lease 1 provider to fetch assets
          */
-        if(empty($providers)){
+        if (empty($providers)) {
             array_push($this->fatals, "The list of provier is empty. You must provide at least one.");
             return $this;
         }
 
         $pool = Pool::create();
 
-    
-        if(config('ugo.api.fake_data')){
+
+        if (config('ugo.api.fake_data')) {
             foreach ($providers as $key => $provider) {
-                if(isset($provider['provider'])){
+                if (isset($provider['provider'])) {
                     try {
                         $fake = (new $provider['provider']($provider))->fake()->format();
                         $this->body = array_merge($this->body, $fake);
-
                     } catch (\Throwable $th) {
                         array_push($this->errors, "Error with '{$key}' provider: {$th->getMessage()}");
                     }
-               
                 }
             }
-        }else{
-            foreach ($providers as $key => $provider) {  
-                
+        } else {
+            foreach ($providers as $key => $provider) {
+
                 /**
                  *  Create a new task/job
-                 */ 
+                 */
                 $task = new AsyncTask($provider, $this);
 
                 /**
@@ -70,7 +82,6 @@ class SearchQuery
                     array_push($this->warnings, ...$data['warning']);
                     array_push($this->errors, ...$data['errors']);
                     array_push($this->times, $data['time']);
-
                 })->catch(function ($exception) {
                     // When an exception is thrown from within a process, it's caught and passed here.
                     array_push($this->errors, "Error with  provider: {$exception->getMessage()}");
@@ -89,7 +100,8 @@ class SearchQuery
     /**
      * Response to the qery builder
      */
-    public function response(){
+    public function response()
+    {
 
         /**
          * Default response object
@@ -103,23 +115,22 @@ class SearchQuery
             "fake" => config('ugo.api.fake_data'),
             "page" => [
                 "current" => $this->page,
-                "next" => $this->page+1,
-                "next_url" => route('search.terms', ['page' => ($this->page+1), 'terms' => $this->term->get()['term']]),
-                "previous_url" => route('search.terms', ['page' => ($this->page-1), 'terms' => $this->term->get()['term']]),
+                "next" => $this->page + 1,
+                "next_url" => route('search.terms', ['page' => ($this->page + 1), 'terms' => $this->term->get()['term']]),
+                "previous_url" => route('search.terms', ['page' => ($this->page - 1), 'terms' => $this->term->get()['term']]),
             ],
         ];
 
-        
-        if(!empty($this->fatals)){
+
+        if (!empty($this->fatals)) {
             $response['fatals'] = $this->fatals;
             $status = 400;
-        }else{
+        } else {
             // Build json response
             $response['assets'] = $this->body;
             $status = 200;
         }
 
         return response()->json($response, $status);
-
     }
 }

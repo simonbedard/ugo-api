@@ -1,16 +1,22 @@
 <?php
+
 namespace App\Ugo\Providers;
+
 use App\Ugo\Providers\ImageProvider;
 use App\Ugo\Terms\Term;
 use GuzzleHttp\Client;
-use Illuminate\Http\Exception;
+use GuzzleHttp\Exception\ClientException;
+
 
 class Pexel extends ImageProvider
 {
-    public static $name = "Pexel";
-    public $validColors = ["red", "orange", "yellow", "green", "turquoise", "blue", "violet", "pink", "brown", "black", "gray", "white"];
-   
-    function __construct($config){
+    public static String $name = "Pexel";
+    public static array $validColors = ["red", "orange", "yellow", "green", "turquoise", "blue", "violet", "pink", "brown", "black", "gray", "white"];
+    private Client $client;
+    private array $formatedJson;
+
+    function __construct($config)
+    {
         // Call the parent controller to set the configuration
         parent::__construct($config);
         $this->client = new Client(['base_uri' => 'https://api.pexels.com/']);
@@ -19,21 +25,21 @@ class Pexel extends ImageProvider
     /**
      * Get real api request
      */
-    public function get(Term $term, $page, Array $filters){
-        
+    public function get(Term $term, $page, array $filters)
+    {
+
         try {
             $client = new Client(['base_uri' => 'https://api.pexels.com/']);
             $response = $client->get('v1/search', $this->getRequestOptions($term, $page, $filters));
             $this->data = json_decode($response->getBody()->getContents(), true);
-            if($response->getStatusCode() != 200){
+            if ($response->getStatusCode() != 200) {
                 //array_push($this->errors, ...$this->data["errors"]);
                 $this->failed = true;
-            }else{
+            } else {
                 $this->failed = false;
             }
-        }
-        catch (GuzzleHttp\Exception\ClientException $e) {
-        
+        } catch (ClientException $e) {
+
             $response = $e->getResponse();
             $responseBodyAsString = $response->getBody()->getContents();
             $this->failed = true;
@@ -45,11 +51,12 @@ class Pexel extends ImageProvider
     /**
      * Format API response from Pexel provider
      */
-    public function format(){
+    public function format()
+    {
         $this->formatedJson = [];
-        if(!$this->failed && isset($this->data['photos'])){
+        if (!$this->failed && isset($this->data['photos'])) {
             foreach ($this->data['photos'] as $key => $value) {
-                array_push($this->formatedJson,[
+                array_push($this->formatedJson, [
 
                     "provider" => self::$name,
                     "width" => $value['width'],
@@ -63,15 +70,16 @@ class Pexel extends ImageProvider
 
         return $this->formatedJson;
     }
-        /**
+    /**
      * Format array filter to be ready for unsplash request
      * This function will get the default filters in request and format it to unsplash 
      */
-    public function getRequestOptions(Term $term, $page, Array $filters){
+    public function getRequestOptions(Term $term, $page, array $filters)
+    {
 
         $newArray = [
             'http_errors' => false,
-            'headers'=> [
+            'headers' => [
                 'Authorization' => $this->config['auth']
             ],
             'query' => [
@@ -83,27 +91,26 @@ class Pexel extends ImageProvider
         ];
 
         // Return by default id the filters array is empty
-        if(empty($filters))return $newArray;
+        if (empty($filters)) return $newArray;
 
 
-        foreach($filters as $key => $value){
+        foreach ($filters as $key => $value) {
             switch ($key) {
                 case 'color':
                     $color = strtolower($value);
-                    if(in_array($color, $this->validColors)){
+                    if (in_array($color, $this->validColors)) {
                         // Color value is good
                         $newArray['query']['color'] = $color;
-                    }else{
+                    } else {
                         // Add warning to request but do not break request
-                        array_push($this->warnings, self::$name.": The color param is not a valide Unsplash attribute");
+                        array_push($this->warnings, self::$name . ": The color param is not a valide Unsplash attribute");
                     }
                     break;
                 default:
                     // Add warning $key not found to request but do not break request
-                    array_push($this->warnings, self::$name.": The {$key} param is not a valide attribute");
+                    array_push($this->warnings, self::$name . ": The {$key} param is not a valide attribute");
                     break;
             }
-
         }
 
         return $newArray;
@@ -115,28 +122,30 @@ class Pexel extends ImageProvider
     /**
      * Get single file from provider
      */
-    public function getSingleFile($id){
-        
-        
+    public function getSingleFile($id)
+    {
+
+
         $response = $this->client->get("v1/photos/{$id}", $this->geSingletRequestOptions());
 
         /**
          * Format the response to json
          */
         $this->data = json_decode($response->getBody()->getContents(), true);
-        if($response->getStatusCode() != 200){
+        if ($response->getStatusCode() != 200) {
             array_push($this->errors, ...$this->data["errors"]);
             $this->failed = true;
-        }else{
+        } else {
             $this->failed = false;
         }
         return $this;
     }
 
-    public function geSingletRequestOptions(){
+    public function geSingletRequestOptions()
+    {
         $newArray = [
             'http_errors' => false,
-            'headers'=> [
+            'headers' => [
                 'Authorization' => $this->config['auth']
             ],
         ];
@@ -144,15 +153,16 @@ class Pexel extends ImageProvider
         return $newArray;
     }
 
-    public function formatSingle(){
+    public function formatSingle()
+    {
         $this->formatedJson = [];;
-        
+
         /**
          * Request must not be failed and result must be available
          */
-        if(!$this->failed && isset($this->data)){
+        if (!$this->failed && isset($this->data)) {
 
-            array_push($this->formatedJson,[
+            array_push($this->formatedJson, [
                 "provider" => self::$name,
                 "id" => $this->data['id'],
                 "views" => null,
@@ -171,15 +181,14 @@ class Pexel extends ImageProvider
                     "regular" => $this->data['src']['large'],
                     "small" => $this->data['src']['medium'],
                 ],
-     
-                "exif" => [] ,//exif_read_data($this->data['src']['original']),
+
+                "exif" => [], //exif_read_data($this->data['src']['original']),
                 "links" => [
                     "html" => $this->data['url'],
                     "download" => $this->data['url'],
                 ],
 
             ]);
-        
         }
 
         return $this->formatedJson;

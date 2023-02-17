@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Ugo\Tasks;
 
 use Spatie\Async\Task;
@@ -6,7 +7,11 @@ use Spatie\Async\Task;
 class AsyncTask extends Task
 {
 
-    function __construct($provider, $searchQuery) {
+    public array $config;
+    public $searchQuery;
+
+    function __construct($provider, $searchQuery)
+    {
         $this->config = $provider;
         $this->searchQuery = $searchQuery;
     }

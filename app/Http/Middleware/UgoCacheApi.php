@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Middleware;
+
 use Illuminate\Support\Facades\Cache;
 
 use Closure;
@@ -19,13 +20,12 @@ class UgoCacheApi
     {
 
         return $next($request);
-        
-        if(Cache::has($request->fullUrl())) {
+
+        if (Cache::has($request->fullUrl())) {
             $response = Cache::get($request->fullUrl())->response()->header('X-Ugo-Cache', 'hit');
             return $response;
-        }else{
+        } else {
             return $next($request);
         }
-       
     }
 }

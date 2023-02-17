@@ -6,7 +6,7 @@ return [
     'fake_data' => env('UGO_FAKE_DATA', false),
 
     'provider' => [
-        /*
+        
         'unsplash' => [
             "name" => "Unsplash",
             "auth" => env('UNSPLASH_AUTH'),
@@ -16,7 +16,7 @@ return [
             "provider" => App\Ugo\Providers\Unsplash::class
         ],
         
-        
+        /*
         'pexel' => [
             "name" => "Pexel",
             "auth" => env('PEXEL_AUTH'),
@@ -30,14 +30,15 @@ return [
             "per_page" => env('PIXABAY_PER_PAGE', 20), // Number of image per request 
             "order_by" => env('PIXABAY_ORDER_BUY', 'popular'), //"popular", "latest"
             "provider" => App\Ugo\Providers\Pixabay::class
-        ],*/
+        ],
 
 
         'deposite' => [
             "name" => "Deposite",
             "auth" => env('DEPOSITE_API_KEY'),
             "provider" => App\Ugo\Providers\Deposite::class
-        ],
+        ],*/
+        
         /*
         'test' => [
             "provider" => App\Ugo\Providers\Pexl::class

@@ -100,12 +100,13 @@ class SearchQuery
             "filters" => $this->filters,
             "errors" => $this->errors,
             "warnings" => $this->warnings,
+            "fake" => config('ugo.api.fake_data'),
             "page" => [
                 "current" => $this->page,
                 "next" => $this->page+1,
                 "next_url" => route('search.terms', ['page' => ($this->page+1), 'terms' => $this->term->get()['term']]),
                 "previous_url" => route('search.terms', ['page' => ($this->page-1), 'terms' => $this->term->get()['term']]),
-            ]
+            ],
         ];
 
         

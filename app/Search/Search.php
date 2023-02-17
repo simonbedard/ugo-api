@@ -36,7 +36,7 @@ class Search
         // Get the response onject and set the header;
         $response = $searchQuery->response()->header('X-Ugo-Cache', 'miss');
         // Cache the response
-        // $this->setCache($request, $searchQuery);
+        $this->setCache($request, $searchQuery);
         
 
         // $this->SetAnalytics($execution_time);

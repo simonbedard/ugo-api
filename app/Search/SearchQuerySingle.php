@@ -65,9 +65,9 @@ class SearchQuerySingle
             "name" => $this->name,
             "errors" => $this->errors,
             "warnings" => $this->warnings,
+            "fake" => config('ugo.api.fake_data'),
         ];
 
-        
         if(!empty($this->fatals)){
             $response['fatals'] = $this->fatals;
             $status = 400;

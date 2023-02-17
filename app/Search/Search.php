@@ -109,10 +109,7 @@ class Search
             "page" => $page,
             "filters" => $request->all(),
         ];
-
        
-
-
         // Create and run the query
         $searchQuery = (new SearchQuery($queryOptions))->run();
         
@@ -132,8 +129,9 @@ class Search
      * Set analitycs data after request is done
      */
     private function SetAnalytics($execution_time, $name){
+        $channelName = "analytics";
         // Store request Analytics data (Request time)
-        log::info("Search: {$name} take: {$execution_time} sec");
+        log::channel($channelName)->info("Search: {$name} take: {$execution_time} sec");
     }
 
 }

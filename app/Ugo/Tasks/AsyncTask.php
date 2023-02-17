@@ -9,21 +9,25 @@ class AsyncTask extends Task
 
     public array $config;
     public $searchQuery;
+    public float $time_start;
 
     function __construct($provider, $searchQuery)
     {
+        $this->time_start = microtime(true);
         $this->config = $provider;
         $this->searchQuery = $searchQuery;
     }
-    public function configure()
+    public function configure(): void
     {
         // Setup eg. dependency container, load config,...
     }
 
-    public function run()
+    /**
+     * Run asyncronous task
+     */
+    public function run(): array
     {
 
-        $time_start = microtime(true);
 
         $provierClass = (new $this->config['provider']($this->config));
 
@@ -31,9 +35,7 @@ class AsyncTask extends Task
 
         $warnings = $provierClass->warnings();
         $errors = $provierClass->errors();
-
-        $time_end = microtime(true);
-        $execution_time = ($time_end - $time_start);
+        $execution_time = (microtime(true) - $this->time_start);
 
         return [
             "body" => $body,

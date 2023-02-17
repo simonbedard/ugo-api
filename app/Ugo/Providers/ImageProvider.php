@@ -19,11 +19,11 @@ class ImageProvider
     {
         $this->config = $config;
     }
-    
+
     /**
      * Retreave fake API request from providers
      */
-    public function fake()
+    public function fake(): ImageProvider
     {
         $path = app_path() . "/Ugo/Fake/Json/" . $this->config['name'] . ".json";
         $json = json_decode(file_get_contents($path), true);
@@ -35,7 +35,7 @@ class ImageProvider
     /**
      * Retreave fake API request from single image providers
      */
-    public function fakeSingle()
+    public function fakeSingle(): ImageProvider
     {
         $path = app_path() . "/Ugo/Fake/Json/Single/" . $this->config['name'] . ".json";
         $json = json_decode(file_get_contents($path), true);
@@ -47,14 +47,14 @@ class ImageProvider
     /**
      * Return warning'S
      */
-    public function warnings()
+    public function warnings(): array
     {
         return $this->warnings;
     }
     /**
      * Return warning'S
      */
-    public function errors()
+    public function errors(): array
     {
         return $this->errors;
     }

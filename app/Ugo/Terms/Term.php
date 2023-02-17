@@ -11,7 +11,7 @@ class Term
         $this->term = $term;
     }
 
-    public function get()
+    public function get(): array
     {
         return [
             "term" => $this->term,

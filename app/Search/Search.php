@@ -8,7 +8,7 @@ use App\Search\SearchQuerySingle;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
+use \Illuminate\Http\JsonResponse;
 class Search
 {
 
@@ -31,7 +31,7 @@ class Search
      * @param string
      * @param string
      */
-    public function byTerms(Request $request, string $term, string $page)
+    public function byTerms(Request $request, string $term, string $page): JsonResponse
     {
         // Create the search query options
         $queryOptions = [
@@ -58,7 +58,7 @@ class Search
      * @param $provider
      * @param $id 
      */
-    public function byId(Request $request, $provider, $id)
+    public function byId(Request $request, $provider, $id): JsonResponse
     {
 
         /**
@@ -99,7 +99,7 @@ class Search
      * @param Request
      * @param SearchQuery|SearchQuerySingle
      */
-    private function setCache(Request $request, SearchQuery|SearchQuerySingle $searchQuery)
+    private function setCache(Request $request, SearchQuery|SearchQuerySingle $searchQuery): void
     {
 
         // REFACTOR IF CACHE IS ENABLE
@@ -113,7 +113,7 @@ class Search
      * @param string
      * @param string
      */
-    public function test(Request $request, string $term, string $page)
+    public function test(Request $request, string $term, string $page): JsonResponse
     {
 
         $queryOptions = [
@@ -134,7 +134,7 @@ class Search
      * @param float
      * @param string
      */
-    private function SetAnalytics(float $execution_time, string $name)
+    private function SetAnalytics(float $execution_time, string $name): void
     {
         $channelName = "analytics";
         // Store request Analytics data (Request time)

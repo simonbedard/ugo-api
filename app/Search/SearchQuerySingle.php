@@ -30,7 +30,7 @@ class SearchQuerySingle
     /**
      * Run the query
      */
-    public function run()
+    public function run(): SearchQuerySingle
     {
 
         // Make request to the external api baby
@@ -66,7 +66,7 @@ class SearchQuerySingle
     /**
      * Response to the qery builder
      */
-    public function response()
+    public function response(): \Illuminate\Http\JsonResponse
     {
 
         /**

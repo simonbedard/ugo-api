@@ -4,6 +4,7 @@ namespace App\Search;
 
 use Spatie\Async\Pool;
 use App\Ugo\Tasks\AsyncTask;
+use Illuminate\Http\Response;
 
 class SearchQuery
 {
@@ -36,7 +37,7 @@ class SearchQuery
     /**
      * Run the query
      */
-    public function run()
+    public function run(): SearchQuery
     {
 
         // Make request to the external api baby
@@ -100,7 +101,7 @@ class SearchQuery
     /**
      * Response to the qery builder
      */
-    public function response()
+    public function response(): \Illuminate\Http\JsonResponse
     {
 
         /**

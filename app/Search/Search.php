@@ -54,7 +54,7 @@ class Search
          * Initialise Analitycs
          */
         $this->time_start = microtime(true);
-        $this->time_end = microtime(true);
+
         /**
          * Single Search query options
          */
@@ -82,9 +82,9 @@ class Search
         /**
          * Log query analitycs
          */
-        $execution_time = ($this->time_end - $this->time_start);
-        dump($execution_time);
-        $this->SetAnalytics($execution_time);
+       
+        $execution_time = (microtime(true) - $this->time_start);
+        $this->SetAnalytics($execution_time, __FUNCTION__);
 
         return $response;
     }
@@ -131,9 +131,9 @@ class Search
     /**
      * Set analitycs data after request is done
      */
-    private function SetAnalytics($execution_time){
+    private function SetAnalytics($execution_time, $name){
         // Store request Analytics data (Request time)
-        log::info("Search by terms take: {$execution_time} sec");
+        log::info("Search: {$name} take: {$execution_time} sec");
     }
 
 }

@@ -5,10 +5,12 @@ namespace App\Search;
 use App\Ugo\Terms\Term;
 use App\Search\SearchQuery;
 use App\Search\SearchQuerySingle;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use \Illuminate\Http\JsonResponse;
+use App\Jobs\CompletedSearchQuery;
+
+
 class Search
 {
 
@@ -22,7 +24,6 @@ class Search
          * Initialise Analitycs
          */
         $this->time_start = microtime(true);
-    
     }
 
     /**
@@ -47,8 +48,7 @@ class Search
         // Get the response onject and set the header;
         $response = $searchQuery->response()->header('X-Ugo-Cache', 'miss');
 
-        // Cache the response
-        $this->setCache($request, $searchQuery);
+        CompletedSearchQuery::dispatchAfterResponse($request, $searchQuery);
 
         return $response;
     }
@@ -80,31 +80,16 @@ class Search
          */
         $response = $searchQuery->response()->header('X-Ugo-Cache', 'miss');
 
-        /**
-         * Set query in cache
-         */
-        $this->setCache($request, $searchQuery);
+        CompletedSearchQuery::dispatchAfterResponse($request, $searchQuery);
 
         /**
          * Log query analitycs
          */
         $execution_time = (microtime(true) - $this->time_start);
         $this->SetAnalytics($execution_time, __FUNCTION__);
-
         return $response;
     }
 
-    /**
-     * Set the result of the query to the cache layer
-     * @param Request
-     * @param SearchQuery|SearchQuerySingle
-     */
-    private function setCache(Request $request, SearchQuery|SearchQuerySingle $searchQuery): void
-    {
-
-        // REFACTOR IF CACHE IS ENABLE
-        Cache::put($request->fullUrl(), $searchQuery);
-    }
 
 
     /**

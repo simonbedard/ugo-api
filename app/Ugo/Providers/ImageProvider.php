@@ -7,7 +7,7 @@ class ImageProvider
 
     public array $warnings = [];
     public array $errors = [];
-    public array $failed = false;
+    public bool $failed = false;
     public array $data = [];
     public array $config;
     public $fake;

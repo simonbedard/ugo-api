@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Search\SearchFacade as _Search;
 
-
 class SearchController extends Controller
 {
+   function __construct(){
+   }
     /**
      * Search api by terms
      */
@@ -22,11 +23,13 @@ class SearchController extends Controller
      */
      public function SearchByProviderAndId(Request $request, string $provider, string $id){
         $response = _Search::byId($request, $provider, $id);
+ 
         return $response; 
      }
 
+     /*
      public function test(Request $request){
         $response = _Search::test($request, $terms, $page);
         return $response; 
-     }
+     }*/
 }

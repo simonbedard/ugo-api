@@ -4,7 +4,7 @@ return [
 
     'debug' => env('UGO_DEBUG', false),
     'fake_data' => env('UGO_FAKE_DATA', false),
-
+    'skip_cache' => env('UGO_SKIP_CACHE', false),
     'provider' => [
         
         'unsplash' => [

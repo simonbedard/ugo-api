@@ -19,6 +19,12 @@ class UgoCacheApi
     public function handle(Request $request, Closure $next)
     {
         
+        /**
+         * Check if we should skip the cache
+         */
+        if (config('ugo.api.skip_cache'))return $next($request);
+        
+
         if (Cache::has($request->fullUrl())) {
             $response = Cache::get($request->fullUrl())->response()->header('X-Ugo-Cache', 'hit');
             return $response;

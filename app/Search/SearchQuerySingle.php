@@ -94,8 +94,8 @@ class SearchQuerySingle
     /**
      * Checking if the query is empty
      */
-    public static function isEmpty(): bool 
+    public function isEmpty(): bool 
     {
-        return true;
+        return empty($this->body);
     }
 }

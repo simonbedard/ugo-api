@@ -90,4 +90,12 @@ class SearchQuerySingle
 
         return response()->json($response, $status);
     }
+
+    /**
+     * Checking if the query is empty
+     */
+    public static function isEmpty(): bool 
+    {
+        return true;
+    }
 }

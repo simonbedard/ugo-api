@@ -18,7 +18,6 @@ class UgoCacheApi
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
         
         if (Cache::has($request->fullUrl())) {
             $response = Cache::get($request->fullUrl())->response()->header('X-Ugo-Cache', 'hit');

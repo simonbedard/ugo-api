@@ -48,7 +48,8 @@ class CompletedSearchQuery implements ShouldQueue
     private function setCache(): void
     {
 
-        // REFACTOR IF CACHE IS ENABLE
+        dd($this->query->isEmpty());
+        // REFACTOR IF CACHE IS ENABLE and prevent cache when empty response. Dont need to cache empty response
         Cache::put($this->request->fullUrl(), $this->query);
     }
 

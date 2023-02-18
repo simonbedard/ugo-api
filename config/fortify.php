@@ -47,7 +47,6 @@ return [
     */
 
     'username' => 'email',
-
     'email' => 'email',
 
     /*
@@ -61,7 +60,7 @@ return [
     |
     */
 
-    'home' => RouteServiceProvider::HOME,
+    'home' => env('SPA_URL') . '/dashboard',
 
     /*
     |--------------------------------------------------------------------------
@@ -134,7 +133,7 @@ return [
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
-        // Features::emailVerification(),
+        Features::emailVerification(),
         Features::updateProfileInformation(),
         Features::updatePasswords(),
         /*

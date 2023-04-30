@@ -57,6 +57,7 @@ class Search
      * Search file by unique id
      * @param $provider
      * @param $id 
+     * @return JsonResponse
      */
     public function byId(Request $request, $provider, $id): JsonResponse
     {
@@ -87,6 +88,7 @@ class Search
          */
         $execution_time = (microtime(true) - $this->time_start);
         $this->SetAnalytics($execution_time, __FUNCTION__);
+        
         return $response;
     }
 

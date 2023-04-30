@@ -173,7 +173,9 @@ class Pixabay extends ImageProvider
          * Request must not be failed and result must be available
          */
         if (!$this->failed && isset($this->data)) {
+
             $value = $this->data['hits'][0];
+
             array_push($this->formatedJson, [
                 "provider" => self::$name,
                 "id" => $value['id'],

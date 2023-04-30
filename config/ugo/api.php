@@ -16,7 +16,7 @@ return [
             "provider" => App\Ugo\Providers\Unsplash::class
         ],
         
-        /*
+        
         'pexel' => [
             "name" => "Pexel",
             "auth" => env('PEXEL_AUTH'),
@@ -37,7 +37,7 @@ return [
             "name" => "Deposite",
             "auth" => env('DEPOSITE_API_KEY'),
             "provider" => App\Ugo\Providers\Deposite::class
-        ],*/
+        ],
         
         /*
         'test' => [

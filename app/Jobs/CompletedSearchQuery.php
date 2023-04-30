@@ -47,10 +47,14 @@ class CompletedSearchQuery implements ShouldQueue
      */
     private function setCache(): void
     {
-        if(!$this->query->isEmpty()){
-            // REFACTOR IF CACHE IS ENABLE and prevent cache when empty response. Dont need to cache empty response
+
+        // REFACTOR IF CACHE IS ENABLE and prevent cache when empty response. Dont need to cache empty response
+        if (!config('ugo.api.fake_data')) {
             Cache::put($this->request->fullUrl(), $this->query);
         }
+/*
+        if(!$this->query->isEmpty()){
+        }*/
 
     }
 

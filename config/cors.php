@@ -17,20 +17,20 @@ return [
 
     'paths' => [
         'api/*',
-        'login',
-        'logout',
-        'register',
+        'auth/login',
+        'auth/logout',
+        'auth/register',
         'user/password',
         'forgot-password',
         'reset-password',
         'sanctum/csrf-cookie',
-        'user/profile-information',
+        'auth/user/profile-information',
         'email/verification-notification',
       ],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [env('SPA_URL', 'http://localhost:3000')],
 
     'allowed_origins_patterns' => [],
 

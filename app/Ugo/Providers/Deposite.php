@@ -98,8 +98,6 @@ class Deposite extends ImageProvider
         // Return by default id the filters array is empty
         if (empty($filters)) return $newArray;
 
-
-
         foreach ($filters as $key => $value) {
             switch ($key) {
                 case 'color':
@@ -184,6 +182,14 @@ class Deposite extends ImageProvider
                     "full" => $this->data['url_max_qa'],
                     "regular" => $this->data['large_thumb'],
                     "small" => $this->data['thumb'],
+                ],
+                "user" => [
+                    "id" => $this->data['userid'],
+                    "name" => $this->data['username'],
+                    "profile_image" => $this->data['avatar'], 
+                    "links" => [
+                        "profile" => null, // No link profile provide by deposite image request
+                    ]
                 ],
                 "exif" => [],
                 "links" => [

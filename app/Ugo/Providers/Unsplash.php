@@ -204,6 +204,14 @@ class Unsplash extends ImageProvider
                     "small" => $this->data['urls']['small'],
                 ],
                 "exif" => [],
+                "user" => [
+                    "id" => $this->data['user']['id'],
+                    "name" => $this->data['user']['name'],
+                    "profile_image" => $this->data['user']['name'],
+                    "links" => [
+                        "profile" => $this->data['user']["profile_image"]["medium"]
+                    ]
+                ],
                 "links" => [
                     "html" => $this->data['links']['html'],
                     "download" => $this->data['links']['download']
@@ -212,6 +220,7 @@ class Unsplash extends ImageProvider
             ]);
         }
 
+        
         return $this->formatedJson;
     }
 }

@@ -195,7 +195,14 @@ class Pixabay extends ImageProvider
                     "regular" => $value['webformatURL'],
                     "small" => $value['previewURL'],
                 ],
-
+                "user" => [
+                    "id" => $value['user_id'],
+                    "name" => $value['user'],
+                    "profile_image" => $value['userImageURL'],
+                    "links" => [
+                        "profile" => null // No link profile provide by pixabay image request
+                    ]
+                ],
                 "exif" => [], //exif_read_data($this->data['src']['original']),
                 "links" => [
                     "html" => $value['pageURL'],

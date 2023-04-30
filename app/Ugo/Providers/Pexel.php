@@ -181,7 +181,14 @@ class Pexel extends ImageProvider
                     "regular" => $this->data['src']['large'],
                     "small" => $this->data['src']['medium'],
                 ],
-
+                "user" => [
+                    "id" => $this->data['photographer_id'],
+                    "name" => $this->data['photographer'],
+                    "profile_image" => null, // No link profile_image provide by pexel image request
+                    "links" => [
+                        "profile" => $this->data['photographer_url'] 
+                    ]
+                ],
                 "exif" => [], //exif_read_data($this->data['src']['original']),
                 "links" => [
                     "html" => $this->data['url'],

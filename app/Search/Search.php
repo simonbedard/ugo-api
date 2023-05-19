@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use \Illuminate\Http\JsonResponse;
 use App\Jobs\CompletedSearchQuery;
 
+use App\Models\Analitycs;
 
 class Search
 {
@@ -49,6 +50,9 @@ class Search
         $response = $searchQuery->response()->header('X-Ugo-Cache', 'miss');
 
         CompletedSearchQuery::dispatchAfterResponse($request, $searchQuery);
+
+        $execution_time = (microtime(true) - $this->time_start);
+        $this->SetAnalytics($execution_time, __FUNCTION__);
 
         return $response;
     }
@@ -124,6 +128,13 @@ class Search
     private function SetAnalytics(float $execution_time, string $name): void
     {
         $channelName = "analytics";
+
+        $data = Analitycs::create([
+            'terms' => "Baseball",
+            'type' => $name,
+            'time' => $execution_time,
+        ]);
+ 
         // Store request Analytics data (Request time)
         log::channel($channelName)->info("Search: {$name} take: {$execution_time} sec");
     }

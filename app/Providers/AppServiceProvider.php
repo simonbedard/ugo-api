@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,15 @@ class AppServiceProvider extends ServiceProvider
     {
         ResetPassword::createUrlUsing(function($notifiable, $token){
             return env('SPA_URL') . "/reset-password/{$token}?email={$notifiable->getEmailForPasswordReset()}";
+        });
+
+        Request::macro('shouldBeCache', function () {
+            if(config('ugo.api.skip_cache') == false){
+                return false;
+            }else{
+                return true;
+            }
+            
         });
     }
 }

@@ -67,6 +67,7 @@ class SearchQuery
                 }
             }
         } else {
+
             foreach ($providers as $key => $provider) {
 
                 /**

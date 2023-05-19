@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Search;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Search\SearchFacade as _Search;
+use Spatie\Crawler\Crawler;
+use App\Observers\ShopifyBurstObserver;
+
+
 class SearchController extends Controller
 {
    function __construct(){
@@ -26,9 +30,15 @@ class SearchController extends Controller
       return $response;
    }
 
-     /*
-     public function test(Request $request){
-        $response = _Search::test($request, $terms, $page);
-        return $response; 
-     }*/
+     
+   public function scrape(Request $request){
+      $data = Crawler::create()
+      ->setCrawlObserver(new ShopifyBurstObserver)
+      ->executeJavaScript()
+      ->startCrawling("https://burst.shopify.com/photos/search?q=baseball");
+
+      dd($data);
+      
+      return "scrape";
+   }
 }

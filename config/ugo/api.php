@@ -6,7 +6,6 @@ return [
     'fake_data' => env('UGO_FAKE_DATA', false),
     'skip_cache' => env('UGO_SKIP_CACHE', false),
     'provider' => [
-        
         'unsplash' => [
             "name" => "Unsplash",
             "auth" => env('UNSPLASH_AUTH'),
@@ -15,7 +14,6 @@ return [
             "content_filter" => env('UNSPLASH_SAFETY', 'low'), // Limit results by content safety. (Optional; default: low). Valid values are low and high
             "provider" => App\Ugo\Providers\Unsplash::class
         ],
-        
         
         'pexel' => [
             "name" => "Pexel",

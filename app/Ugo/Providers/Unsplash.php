@@ -98,7 +98,7 @@ class Unsplash extends ImageProvider
                 'query' => $term->term,
                 'page' => $page,
                 "per_page" => $this->config['per_page'],
-                'order_by' => $this->config['order_by'],
+                // 'order_by' => $this->config['order_by'],
             ]
 
         ];

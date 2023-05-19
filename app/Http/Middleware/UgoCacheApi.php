@@ -20,9 +20,11 @@ class UgoCacheApi
     {
 
         /**
-         * Check if we should skip the cache
+         * Validate if request should be is cachable
          */
-        if (config('ugo.api.skip_cache')) return $next($request);
+        if($request->shouldBeCache()){
+            return $next($request);
+        }else{
 
         /**
          * Check id the cache containe the query
@@ -30,6 +32,7 @@ class UgoCacheApi
         return (Cache::has($request->fullUrl()))
             ? Cache::get($request->fullUrl())->response()->header('X-Ugo-Cache', 'hit')
             : $next($request);
+        }
     }
 
 

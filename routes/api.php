@@ -32,3 +32,6 @@ Route::get('/health', function (Request $request) {
 });
 
 Route::get('/test', [SearchController::class, 'test']);
+
+Route::get('/scraper', [SearchController::class, 'scrape']);
+

@@ -52,8 +52,7 @@ class SearchQuery
             return $this;
         }
 
-        $pool = Pool::create();
-
+        
 
         if (config('ugo.api.fake_data')) {
             foreach ($providers as $key => $provider) {
@@ -68,16 +67,25 @@ class SearchQuery
             }
         } else {
 
+
+         
+            $pool = Pool::create();
+
             foreach ($providers as $key => $provider) {
 
-                /**
-                 *  Create a new task/job
-                 */
+
+                // Without asyn pool
+                /*
+                $provierClass = (new $provider['provider']($provider));
+                $body = $provierClass->get($this->term, $this->page, $this->filters)->format();
+                $this->body = $body;*/
+                
+                
+                // Create a new task/job
                 $task = new AsyncTask($provider, $this);
 
-                /**
-                 * Add the task to the async Pool
-                 */
+                // Add the task to the async Pool
+
                 $pool->add($task, $defaultOutputLength)->then(function ($data) {
                     // On success, `$data` is returned by the process or callable you passed to the queue.
                     array_push($this->body, ...$data['body']);

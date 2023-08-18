@@ -133,7 +133,7 @@ class Pexel extends ImageProvider
          */
         $this->data = json_decode($response->getBody()->getContents(), true);
         if ($response->getStatusCode() != 200) {
-            array_push($this->errors, ...$this->data["errors"]);
+            array_push($this->errors, $this->data["error"]);
             $this->failed = true;
         } else {
             $this->failed = false;
@@ -155,14 +155,12 @@ class Pexel extends ImageProvider
 
     public function formatSingle()
     {
-        $this->formatedJson = [];;
-
         /**
          * Request must not be failed and result must be available
          */
         if (!$this->failed && isset($this->data)) {
 
-            array_push($this->formatedJson, [
+            $this->formatedJson = [
                 "provider" => self::$name,
                 "id" => $this->data['id'],
                 "views" => null,
@@ -195,7 +193,7 @@ class Pexel extends ImageProvider
                     "download" => $this->data['url'],
                 ],
 
-            ]);
+            ];
         }
 
         return $this->formatedJson;

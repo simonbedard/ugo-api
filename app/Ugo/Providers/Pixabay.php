@@ -70,7 +70,7 @@ class Pixabay extends ImageProvider
                     "width" => $value['imageWidth'],
                     "height" => $value['imageHeight'],
                     "id" => $value['id'],
-                    "src" => $value['webformatURL'],
+                    "src" => $value['previewURL'],
                 ]);
             }
         }
@@ -167,7 +167,7 @@ class Pixabay extends ImageProvider
 
     public function formatSingle()
     {
-        $this->formatedJson = [];;
+ 
 
         /**
          * Request must not be failed and result must be available
@@ -176,7 +176,7 @@ class Pixabay extends ImageProvider
 
             $value = $this->data['hits'][0];
 
-            array_push($this->formatedJson, [
+            $this->formatedJson = [
                 "provider" => self::$name,
                 "id" => $value['id'],
                 "views" => $value['views'],
@@ -209,7 +209,7 @@ class Pixabay extends ImageProvider
                     "download" => "Pixabay image are only available to download directly from the pixabay webpage",
                 ],
 
-            ]);
+            ];
         }
 
         return $this->formatedJson;

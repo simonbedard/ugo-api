@@ -7,11 +7,10 @@ use App\Ugo\Terms\Term;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 
-
-class Deposite extends ImageProvider
+class Flickr extends ImageProvider
 {
-    public static String $name = "Deposite";
-    public static $validColors = ["blue", "green", "yellow", "orange", "red", "brown", "violet", "grey", "black", "white"];
+    public static String $name = "Flickr";
+    public static array $validColors = [];
     public static array $validSafety = [1, "true", "high"];
     private Client $client;
     private array $formatedJson;
@@ -20,7 +19,7 @@ class Deposite extends ImageProvider
     {
         // Call the parent controller to set the configuration
         parent::__construct($config);
-        $this->client = new Client(['base_uri' => 'https://api.depositphotos.com']);
+        $this->client = new Client(['base_uri' => 'https://www.flickr.com/services/rest/']);
     }
     /**
      * Get real api request
@@ -28,19 +27,26 @@ class Deposite extends ImageProvider
     public function get(Term $term, $page, array $filters)
     {
 
-        try {
-            $response =  (new Client())->get('https://api.depositphotos.com/', $this->getRequestOptions($term, $page, $filters));
+        
+        $client = new Client(['base_uri' => 'https://www.flickr.com/services/rest/']);
 
+        try {
+
+            $response = $client->get('', $this->getRequestOptions($term, $page, $filters));
+           
             /**
              * Format the response to json
              */
             $this->data = json_decode($response->getBody()->getContents(), true);
+
+    
             if ($response->getStatusCode() != 200) {
                 array_push($this->errors, ...$this->data["errors"]);
                 $this->failed = true;
             } else {
                 $this->failed = false;
             }
+
         } catch (ClientException $e) {
 
             $response = $e->getResponse();
@@ -53,7 +59,7 @@ class Deposite extends ImageProvider
 
 
     /**
-     * Format API response from Deposite provider
+     * Format API response from Unsplash provider
      */
     public function format()
     {
@@ -62,52 +68,74 @@ class Deposite extends ImageProvider
         /**
          * Request must not be failed and result must be available
          */
-        if (!$this->failed && isset($this->data['result'])) {
-            foreach ($this->data['result'] as $key => $value) {
+        if (!$this->failed && isset($this->data['photos'])) {
+            foreach ($this->data['photos']['photo'] as $key => $value) {
                 array_push($this->formatedJson, [
                     "provider" => self::$name,
-                    "width" => $value['width'],
-                    "height" => $value['height'],
+                    "width" => $value['width_l'] ?? null,
+                    "height" => $value['height_l'] ?? null,
                     "id" => $value['id'],
-                    "src" => $value['huge_thumb'],
+                    "src" => $value['url_l'] ?? null,
                 ]);
             }
         }
-
+       
         return $this->formatedJson;
     }
 
     /**
      * Format array filter to be ready for unsplash request
      * This function will get the default filters in request and format it to unsplash 
+     * @param Term
+     * @param string
+     * @param Array
      */
     public function getRequestOptions(Term $term, $page, array $filters)
     {
         $newArray = [
             'http_errors' => false,
-            'headers' => [],
+            'headers' => [
+                'Accept-Version' => 'v1',
+            ],
             'query' => [
-                'dp_command' => "search",
-                'dp_apikey' => $this->config['auth'],
-                "dp_search_query" => $term->term,
-                "dp_search_limit" => 40,
-
+                'method' => "flickr.photos.search",
+                'api_key' => $this->config['auth'],
+                'text' => $term->term,
+                'page' => $page,
+                'license' => "9",
+                'extras' => "views, date, license, url_t, url_s, url_q, url_m, url_n, url_z, url_c, url_l",
+                "per_page" => $this->config['per_page'],
+                'sort' => "relevance",
+                'format' => 'json',
+                'nojsoncallback' => "?",
             ]
+
         ];
 
         // Return by default id the filters array is empty
         if (empty($filters)) return $newArray;
 
+        /*
         foreach ($filters as $key => $value) {
             switch ($key) {
                 case 'color':
                     $color = strtolower($value);
                     if (in_array($color, $this->validColors)) {
                         // Color value is good
-                        $newArray['query']['dp_search_color'] = $color;
+                        $newArray['query']['color'] = $color;
                     } else {
                         // Add warning to request but do not break request
-                        array_push($this->warnings, self::$name . ": The color param is not a valide attribute");
+                        array_push($this->warnings, self::$name . ": The color param is not a valide Unsplash attribute");
+                    }
+                    break;
+                case 'safety':
+
+                    if (in_array($value, $this->validSafety)) {
+                        $newArray['query']['content_filter'] = "high";
+                    } else {
+
+                        // Add warning to request but do not break request
+                        array_push($this->warnings, self::$name . ": The safety param is not a valide attribute");
                     }
                     break;
                 default:
@@ -115,7 +143,9 @@ class Deposite extends ImageProvider
                     array_push($this->warnings, self::$name . ": The {$key} param is not a valide attribute");
                     break;
             }
-        }
+        }*/
+
+
 
         return $newArray;
     }
@@ -126,13 +156,13 @@ class Deposite extends ImageProvider
     public function getSingleFile($id)
     {
 
-        $response =  (new Client())->get('https://api.depositphotos.com/', $this->geSingleRequestOptions($id));
+        $response = $this->client->get("photos/{$id}", $this->geSingletRequestOptions());
         /**
          * Format the response to json
          */
         $this->data = json_decode($response->getBody()->getContents(), true);
         if ($response->getStatusCode() != 200) {
-            array_push($this->errors, $this->data["error"]['errormsg']);
+            array_push($this->errors, ...$this->data["errors"]);
             $this->failed = true;
         } else {
             $this->failed = false;
@@ -140,16 +170,14 @@ class Deposite extends ImageProvider
         return $this;
     }
 
-    public function geSingleRequestOptions($id)
+    public function geSingletRequestOptions()
     {
         $newArray = [
             'http_errors' => false,
-            'headers' => [],
-            'query' => [
-                'dp_command' => "getMediaData",
-                'dp_apikey' => $this->config['auth'],
-                "dp_media_id" => $id,
-            ]
+            'headers' => [
+                'Accept-Version' => 'v1',
+                'Authorization' => "Client-ID {$this->config['auth']}"
+            ],
         ];
 
         return $newArray;
@@ -157,47 +185,50 @@ class Deposite extends ImageProvider
 
     public function formatSingle()
     {
+        $this->formatedJson = [];
+
         /**
          * Request must not be failed and result must be available
          */
         if (!$this->failed && isset($this->data)) {
+
             //$exif = self::exif($this->data['urls']['raw']);
             $this->formatedJson = [
                 "provider" => self::$name,
                 "id" => $this->data['id'],
                 "views" => $this->data['views'],
                 "downloads" => $this->data['downloads'],
-                "likes" => null,
+                "likes" => $this->data['likes'],
                 "description" => $this->data['description'],
                 "width" => $this->data['width'],
                 "height" => $this->data['height'],
-                "size" => $this->data['original_filesize'],
+                "size" => "Should scrap HTML or exif scraper",
                 "date" => [
-                    "created_at" => $this->data['published'],
-                    "updated_at" => $this->data['updated']
+                    "created_at" => $this->data['created_at'],
+                    "updated_at" => $this->data['updated_at']
                 ],
                 "src" => [
-                    "full" => $this->data['url_max_qa'],
-                    "regular" => $this->data['large_thumb'],
-                    "small" => $this->data['thumb'],
-                ],
-                "user" => [
-                    "id" => $this->data['userid'],
-                    "name" => $this->data['username'],
-                    "profile_image" => $this->data['avatar'], 
-                    "links" => [
-                        "profile" => null, // No link profile provide by deposite image request
-                    ]
+                    "full" => $this->data['urls']['full'],
+                    "regular" => $this->data['urls']['regular'],
+                    "small" => $this->data['urls']['small'],
                 ],
                 "exif" => [],
+                "user" => [
+                    "id" => $this->data['user']['id'],
+                    "name" => $this->data['user']['name'],
+                    "profile_image" => $this->data['user']['name'],
+                    "links" => [
+                        "profile" => $this->data['user']["profile_image"]["medium"]
+                    ]
+                ],
                 "links" => [
-                    "html" => $this->data['itemurl'],
-                    "download" => "Deposite image are only available to download directly from the pixabay webpage",
+                    "html" => $this->data['links']['html'],
+                    "download" => $this->data['links']['download']
                 ],
 
             ];
         }
-
+                
         return $this->formatedJson;
     }
 }

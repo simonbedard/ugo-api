@@ -184,7 +184,7 @@ class Unsplash extends ImageProvider
         if (!$this->failed && isset($this->data)) {
 
             //$exif = self::exif($this->data['urls']['raw']);
-            array_push($this->formatedJson, [
+            $this->formatedJson = [
                 "provider" => self::$name,
                 "id" => $this->data['id'],
                 "views" => $this->data['views'],
@@ -217,10 +217,9 @@ class Unsplash extends ImageProvider
                     "download" => $this->data['links']['download']
                 ],
 
-            ]);
+            ];
         }
-
-        
+                
         return $this->formatedJson;
     }
 }

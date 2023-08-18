@@ -6,6 +6,7 @@ return [
     'fake_data' => env('UGO_FAKE_DATA', false),
     'skip_cache' => env('UGO_SKIP_CACHE', false),
     'provider' => [
+        
         'unsplash' => [
             "name" => "Unsplash",
             "auth" => env('UNSPLASH_AUTH'),
@@ -30,11 +31,18 @@ return [
             "provider" => App\Ugo\Providers\Pixabay::class
         ],
 
-
         'deposite' => [
             "name" => "Deposite",
             "auth" => env('DEPOSITE_API_KEY'),
             "provider" => App\Ugo\Providers\Deposite::class
+        ],
+
+        'flikr' => [
+            "name" => "Flickr",
+            "auth" => env('FLICKR_API_KEY'),
+            "secret" => env('FLICKR_SECRET'),
+            "per_page" => env('FLICKR_PER_PAGE', 20),
+            "provider" => App\Ugo\Providers\Flickr::class
         ],
         
         /*

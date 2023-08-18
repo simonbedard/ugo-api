@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Search;
+use App\Models\File;
 
 class SearchQuerySingle
 {
@@ -44,7 +45,6 @@ class SearchQuerySingle
             return $this;
         }
 
-        // $pool = Pool::create();
 
         $provierClass = (new $providers[$this->provider]['provider']($providers[$this->provider]));
 
@@ -56,8 +56,19 @@ class SearchQuerySingle
                 array_push($this->errors, "Error with '{$this->provider}' provider: {$th->getMessage()}");
             }
         } else {
+            
+           
+            // Check if the file is not allready in the database
+            if (File::where('provider_id', $this->id)->exists()) {
+                // Get data from databae
+                $this->body = File::where('provider_id', $this->id)->first()->attributesToArray();
 
-            $this->body = $provierClass->getSingleFile($this->id)->formatSingle();
+            }else{
+                // Get data from external API
+                $this->body = $provierClass->getSingleFile($this->id)->formatSingle();
+                array_push($this->errors, ...$provierClass->errors);
+
+            }
         }
 
         return $this;

@@ -9,9 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use \Illuminate\Http\JsonResponse;
 use App\Jobs\CompletedSearchQuery;
-
 use App\Models\Analitycs;
-
+use App\Http\Controllers\FileController;
 class Search
 {
 
@@ -52,9 +51,12 @@ class Search
         CompletedSearchQuery::dispatchAfterResponse($request, $searchQuery);
 
         $execution_time = (microtime(true) - $this->time_start);
-        $this->SetAnalytics($execution_time, __FUNCTION__);
+        $this->SetAnalytics($term, $execution_time, __FUNCTION__);
+
+
 
         return $response;
+
     }
 
     /**
@@ -79,7 +81,6 @@ class Search
          * Create the query and run it
          */
         $searchQuery = (new SearchQuerySingle($queryOptions))->run();
-
         /**
          * Format the response
          */
@@ -91,7 +92,15 @@ class Search
          * Log query analitycs
          */
         $execution_time = (microtime(true) - $this->time_start);
-        $this->SetAnalytics($execution_time, __FUNCTION__);
+        $this->SetAnalytics($id, $execution_time, __FUNCTION__);
+
+         /**
+         * Save file to database
+         */
+        if(!$searchQuery->isEmpty()){
+            FileController::create($searchQuery->body);
+        }
+       
         
         return $response;
     }
@@ -125,12 +134,12 @@ class Search
      * @param float
      * @param string
      */
-    private function SetAnalytics(float $execution_time, string $name): void
+    private function SetAnalytics($value, float $execution_time, string $name): void
     {
         $channelName = "analytics";
 
         $data = Analitycs::create([
-            'terms' => "Baseball",
+            'terms' => $value,
             'type' => $name,
             'time' => $execution_time,
         ]);
